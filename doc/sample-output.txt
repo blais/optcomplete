@@ -1,0 +1,171 @@
+==================================
+optcomplete: Sample Example Output
+==================================
+
+:Author: Martin Blais <blais@furius.ca>
+:Date: 2004-01-26
+:Abstract:
+
+   Some sample output and examples of what optcomplete provides.
+
+Basic Features
+==============
+
+For some input script with the following ``optparse`` declarations::
+
+    parser = optparse.OptionParser()
+
+    parser.add_option('-s', '--simple', action='store_true',
+                      help="Simple really simple option without argument.")
+
+    parser.add_option('-o', '--output', action='store',
+                      help="Option that requires an argument.")
+
+    parser.add_option('-p', '--script', action='store',
+                      help="Option that takes python scripts args only.")
+
+We modify the last option simply to add one option-specific completer (this is
+option, for this demo)::
+
+    opt = parser.add_option('-p', '--script', action='store',
+                            help="Option that takes python scripts args only.")
+    opt.completer = optcomplete.RegexCompleter('.*\.py')
+
+And then, to add support for completions, we need only add a call to the
+autocomplete function, with optional regexps for filename completion::
+
+    # Support completion for the command-line of this script.
+    optcomplete.autocomplete(parser, ['.*\.tar.*'])
+
+Here is sample output from the script.
+
+.. note:: At the end of each input line I pressed <TAB> and not <ENTER>.
+
+
+Files present in the test directory::
+
+    elbow:~/p/optcomplete/test$ ls -l
+    total 24
+    drwxr-xr-x    2 blais    users        4096 Jan 26 00:59 CVS
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 a.tar
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 a.tar.bz2
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 b.tar.gz
+    drwxr-xr-x    3 blais    users        4096 Jan 26 00:38 dir1
+    -rw-r--r--    1 blais    users        5803 Jan 26 01:03 sample-output.html
+    -rw-r--r--    1 blais    users        4160 Jan 26 01:04 sample-output.txt
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 script.sh
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 script1.py
+    -rw-r--r--    1 blais    users           0 Jan 26 00:38 script2.py
+
+Completing without prefix outputs long and short options, and filename
+completion::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test
+  --help     --script   -h         -p         a.tar      b.tar.gz
+  --output   --simple   -o         -s         a.tar.bz2
+
+Completing existing short options completes simply::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test -
+  --help    --output  --script  --simple  -h        -o        -p        -s
+
+  elbow:~/p/optcomplete/test$ optcomplete-test -s
+
+Completing existing long options works the same::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --
+  --help    --output  --script  --simple
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --s
+  elbow:~/p/optcomplete/test$ optcomplete-test --simple
+
+Note that if an option requires an argument, other options following it are not
+listed as possible completions::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --output
+  a.tar      a.tar.bz2  b.tar.gz
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --simple
+  --help     --script   -h         -p         a.tar      b.tar.gz
+  --output   --simple   -o         -s         a.tar.bz2
+
+Option-specific completion can be easily implemented as seen above, in this
+example, the option ``--script`` takes files that end with ``.py`` only::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --script
+  script1.py  script2.py
+
+This works anywhere on the command-line, and so on::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --simple --script script1.py
+  --help     --script   -h         -p         a.tar      b.tar.gz
+  --output   --simple   -o         -s         a.tar.bz2
+
+Note that a partial filename will restrict the choices, as expected::
+
+  elbow:~/p/optcomplete/test$ optcomplete-test --simple --script script1.py a.
+  a.tar      a.tar.bz2
+  elbow:~/p/optcomplete/test$ optcomplete-test --simple --script script1.py a.tar
+
+And running the program has the usual behaviour of ``optparse``, nothing changes::
+
+  ----------------------------------------------------------
+  opts <Values at 0x404181ac: {'simple': None, 'output': None, 'script': 'script1.py'}>
+  args ['a.tar']
+  ----------------------------------------------------------
+
+.. note::
+
+   It is important to note that a shell completion hook is required in order for
+   the shell to invoke the Python script with the appropriate input to request
+   ``optcomplete`` completion in the first place.  This can be done in a
+   bash/shell initialization file for each supported program once the shell
+   ``_optcomplete`` function has been sourced, it could easily be setup
+   globally::
+
+       complete -F _optcomplete optcomplete-test
+
+
+
+Using Subcommands
+=================
+
+You can also implement completion for subcommands, given very few
+restrictions. Basically, you build a map from command name to command object and
+give that to the ``autocomplete()`` function and it works it out for you::
+
+  elbow:~/p/optcomplete$ optcomplete-commands
+  --global    --version   -v          foo         help
+  --help      -g          bar         goo         man
+  --verbose   -h          completing  gore        simplest
+  elbow:~/p/optcomplete$ optcomplete-commands
+
+Subcommands can have their own custom completion for their own arguments::
+
+  elbow:~/p/optcomplete$ optcomplete-commands bar
+  --help         -L             commands       some
+  --local        -h             completion
+  --local-other  -l             default
+  elbow:~/p/optcomplete$ optcomplete-commands bar
+
+For the following interface::
+
+  elbow:~/p/optcomplete$ optcomplete-commands bar --help
+  usage: Bar command description, derived from foo.
+
+  options:
+    -h, --help         show this help message and exit
+    -l, --local        Some local option.
+    -L, --local-other  Some other local option.
+  elbow:~/p/optcomplete$
+
+
+Note above that the completions have been set to a default for all the commands,
+so that the words 'commands', 'some', 'completion', 'default' are produced.
+
+You can setup command-specific completion as well::
+  
+  elbow:~/p/optcomplete$ optcomplete-commands foo 
+  --help      -h          foo_topic1  
+  --local     -l          foo_topic2  
+  elbow:~/p/optcomplete$ optcomplete-commands foo 

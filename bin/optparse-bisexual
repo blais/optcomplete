@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+#******************************************************************************\
+#* Copyright (c) 2003-2004, Martin Blais
+#* All rights reserved.
+#*
+#* Redistribution and use in source and binary forms, with or without
+#* modification, are permitted provided that the following conditions are
+#* met:
+#*
+#* * Redistributions of source code must retain the above copyright
+#*   notice, this list of conditions and the following disclaimer.
+#*
+#* * Redistributions in binary form must reproduce the above copyright
+#*   notice, this list of conditions and the following disclaimer in the
+#*   documentation and/or other materials provided with the distribution.
+#*
+#* * Neither the name of the Martin Blais, Furius, nor the names of its
+#*   contributors may be used to endorse or promote products derived from
+#*   this software without specific prior written permission.
+#*
+#* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+#* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+#* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+#* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#******************************************************************************\
+
+"""optparse-bisexual [<options>] <archive>
+
+Example template for a script that changes itself depending on how it is
+invoked.
+
+This script has a dual personality: depending on its given name, it will act
+differently if called the-man or the-woman, and a -@ switch can be given to
+switch its behaviour (you can alias the "other" behaviour to use this switch.
+Somethng like this::
+
+   alias the-woman='the-man -@ '
+
+You need to rename this to 'the-man'. Note: this script does not have anything
+to do with the man page program man(1).
+"""
+
+doc_man = """the-man [<options>] <directory> [<directory> ...]
+
+Manly script.
+"""
+
+doc_woman = """the-woman [<options>] <archive>
+
+Womanly script.
+"""
+
+__version__ = "$Revision: 1.1 $"
+__author__ = "Martin Blais <blais@furius.ca>"
+
+#===============================================================================
+# EXTERNAL DECLARATIONS
+#===============================================================================
+
+import sys, os
+import optparse
+
+#===============================================================================
+# MAIN
+#===============================================================================
+
+#-------------------------------------------------------------------------------
+#
+def guesstype():
+    import getopt
+    import os.path
+    sname = os.path.basename(sys.argv[0])
+    doman = True # default
+    if sname.startswith('the-man'):
+        doman = True
+    elif sname.startswith('the-woman'):
+        doman = False
+
+    while len(sys.argv) > 1 and sys.argv[1] == '-@':
+        del sys.argv[1]
+        doman = not doman
+        
+    return doman
+
+#-------------------------------------------------------------------------------
+#
+def man():
+    parser = optparse.OptionParser(doc_man.strip(),
+                                   version=__version__)
+    parser.add_option('-t', '--toy', action='store',
+                      help="allows to specify which toy to use")
+    opts, args = parser.parse_args()
+
+    if not args:
+        parser.print_help()
+        sys.exit(0)
+
+    print dir(opts)
+
+#-------------------------------------------------------------------------------
+#
+def woman():
+    parser = optparse.OptionParser(doc_woman.strip(),
+                                   version=__version__)
+    parser.add_option('-s', '--shop', action='store',
+                      help="allows to specify where to go shopping")
+    opts, args = parser.parse_args()
+
+    if not args:
+        parser.print_help()
+        sys.exit(0)
+
+    print dir(opts)
+
+if __name__ == '__main__':
+    if guesstype():
+        man()
+    else:
+        woman()

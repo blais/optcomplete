@@ -1,0 +1,33 @@
+====================
+CHANGES: optcomplete
+====================
+
+Current
+-------
+
+- ''xml-victorinox rename current/'' would not complete by listing the directory
+  for the xml files... RegexCompleter.__call__ has been changed to have an extra
+  argument to always list the subdirectories, and also can list subdirectories
+  in prefixes, so you can complete ``dir/partial_filename``.
+
+Version 1.2
+-----------
+
+- Following a user's suggestion, changed license to BSD-style license so that it
+  is compatible with the Python code and optparse.
+
+Version 1.1
+-----------
+
+- Added setup.py
+- Implemented support for --opt=<TAB> syntax to work.
+- Implemented support for subcommands, fixed bugs.
+- Implemented more completers
+- [2004-01-27] Added ListCompleter, while writing support for scripts with
+  subcommands.
+
+
+Version 1.0
+-----------
+
+- Initial public release.

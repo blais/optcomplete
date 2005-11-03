@@ -1,0 +1,101 @@
+===============================
+Using optcomplete Conditionally
+===============================
+
+:Author: Martin Blais <blais@furius.ca>
+:Date: 2004-01-28
+:Abstract:
+
+   Notes on adding conditionals for scripts to keep on working even without
+   optcomplete.
+
+Motivation
+==========
+
+Sometimes it is important for a particular script to be able to work without the
+presence of the non-standard ``optcomplete`` module.  After that, if that is the
+only thing that is missing, the script is still able to do its work without
+completion.
+
+This document contains little notes on how to do this but still take advantage
+of auto-generated completion if the module is available.
+
+Note
+----
+
+Note that if your shell binding hooks a program to the autocomplete function,
+the program will be invoked without arguments and you will see the output that
+calling it as such would generate, unless the program is written to handle this
+case by manually recognizing completion is being called for, e.g.::
+
+    ....
+    elif 'COMP_LINE' in os.environ:
+        return -1
+
+
+Simple
+======
+
+You can import like this::
+
+   try:
+       import optcomplete
+   except ImportError:
+       optcomplete = None
+
+Then, further one, you can use a global conditional for the completion code::
+
+   if optcomplete:
+       ...
+
+e.g.::
+
+    if optcomplete:
+        optcomplete.autocomplete(parser, ['.*\.tar.*'])
+
+
+With Subcommands
+================
+
+Importing, with a base class for commands::
+
+    try:
+        import optcomplete
+        CmdComplete = optcomplete.CmdComplete
+    except ImportError:
+        optcomplete, CmdComplete = None, object
+
+
+Then you can use the same conditional::
+
+    class CmdCompleting(CmdFoo):
+    
+        ...
+
+        if optcomplete:
+            completer = .......
+    
+        def addopts( self, parser ):
+            CmdFoo.addopts(self, parser)
+            opt = parser.add_option(....
+            if optcomplete:
+                opt.completer = .....
+            
+
+You can also check for completions manually and return nothing if the invocation
+is from completion::
+    
+    # subcommand completions
+    if optcomplete:
+        scmap = {}
+        for sc in subcmds:
+            for n in sc.names:
+                scmap[n] = sc
+
+        listcter = optcomplete.ListCompleter(scmap.keys())
+        subcter = optcomplete.ListCompleter(
+            ['some', 'default', 'commands', 'completion'])
+        optcomplete.autocomplete(
+            gparser, listcter, None, subcter, subcommands=scmap)
+    elif 'COMP_LINE' in os.environ:
+        return -1

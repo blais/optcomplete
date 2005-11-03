@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# $Id: bashrc,v 1.5 2004/01/28 05:30:12 blais Exp $
+# $Source: /home/blais/repos/cvsroot/optcomplete/etc/bashrc,v $
+#
+# Bash configuration for this project.
+#
+
+# source the optcomplete shell functions.
+. $PROJDIR/etc/optcomplete.bash
+
+# Make bash invoke optcomplete completion for the test programs.
+complete -F _optcomplete optcomplete-simple
+complete -F _optcomplete optcomplete-conditional
+complete -F _optcomplete optcomplete-commands

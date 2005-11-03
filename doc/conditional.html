@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="generator" content="Docutils 0.3.10: http://docutils.sourceforge.net/" />
+<title>Using optcomplete Conditionally</title>
+<meta name="author" content="Martin Blais &lt;blais&#64;furius.ca&gt;" />
+<meta name="date" content="2004-01-28" />
+<link rel="stylesheet" href="../style.css" type="text/css" />
+</head>
+<body>
+
+<div id="project-header">
+  <a href="/"><img src="/home/furius-logo-w.png" id="logo"></a>
+  <div id="project-home"><a href="..">Project Home</a></div>
+</div>
+
+<div class="document" id="using-optcomplete-conditionally">
+<h1 class="title">Using optcomplete Conditionally</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>Martin Blais &lt;<a class="reference" href="mailto:blais&#64;furius.ca">blais&#64;furius.ca</a>&gt;</td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2004-01-28</td></tr>
+</tbody>
+</table>
+<div class="abstract topic">
+<p class="topic-title first">Abstract</p>
+<p>Notes on adding conditionals for scripts to keep on working even without
+optcomplete.</p>
+</div>
+<div class="section">
+<h1><a id="motivation" name="motivation">Motivation</a></h1>
+<p>Sometimes it is important for a particular script to be able to work without the
+presence of the non-standard <tt class="docutils literal"><span class="pre">optcomplete</span></tt> module.  After that, if that is the
+only thing that is missing, the script is still able to do its work without
+completion.</p>
+<p>This document contains little notes on how to do this but still take advantage
+of auto-generated completion if the module is available.</p>
+<div class="section">
+<h2><a id="note" name="note">Note</a></h2>
+<p>Note that if your shell binding hooks a program to the autocomplete function,
+the program will be invoked without arguments and you will see the output that
+calling it as such would generate, unless the program is written to handle this
+case by manually recognizing completion is being called for, e.g.:</p>
+<pre class="literal-block">
+....
+elif 'COMP_LINE' in os.environ:
+    return -1
+</pre>
+</div>
+</div>
+<div class="section">
+<h1><a id="simple" name="simple">Simple</a></h1>
+<p>You can import like this:</p>
+<pre class="literal-block">
+try:
+    import optcomplete
+except ImportError:
+    optcomplete = None
+</pre>
+<p>Then, further one, you can use a global conditional for the completion code:</p>
+<pre class="literal-block">
+if optcomplete:
+    ...
+</pre>
+<p>e.g.:</p>
+<pre class="literal-block">
+if optcomplete:
+    optcomplete.autocomplete(parser, ['.*\.tar.*'])
+</pre>
+</div>
+<div class="section">
+<h1><a id="with-subcommands" name="with-subcommands">With Subcommands</a></h1>
+<p>Importing, with a base class for commands:</p>
+<pre class="literal-block">
+try:
+    import optcomplete
+    CmdComplete = optcomplete.CmdComplete
+except ImportError:
+    optcomplete, CmdComplete = None, object
+</pre>
+<p>Then you can use the same conditional:</p>
+<pre class="literal-block">
+class CmdCompleting(CmdFoo):
+
+    ...
+
+    if optcomplete:
+        completer = .......
+
+    def addopts( self, parser ):
+        CmdFoo.addopts(self, parser)
+        opt = parser.add_option(....
+        if optcomplete:
+            opt.completer = .....
+</pre>
+<p>You can also check for completions manually and return nothing if the invocation
+is from completion:</p>
+<pre class="literal-block">
+# subcommand completions
+if optcomplete:
+    scmap = {}
+    for sc in subcmds:
+        for n in sc.names:
+            scmap[n] = sc
+
+    listcter = optcomplete.ListCompleter(scmap.keys())
+    subcter = optcomplete.ListCompleter(
+        ['some', 'default', 'commands', 'completion'])
+    optcomplete.autocomplete(
+        gparser, listcter, None, subcter, subcommands=scmap)
+elif 'COMP_LINE' in os.environ:
+    return -1
+</pre>
+</div>
+</div>
+</body>
+</html>

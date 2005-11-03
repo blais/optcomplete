@@ -1,0 +1,2 @@
+These files are actually just test hooks for various uses of optparse and
+optcomplete.  They should not be packaged in the distribution.

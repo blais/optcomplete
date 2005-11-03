@@ -1,0 +1,11 @@
+Description: Shell Completion Self-Generator for Python
+Official-Homepage: http://furius.ca/optcomplete
+Author: Martin Blais
+Author-Email: blais@furius.ca
+ChangeLog: http://furius.ca/optcomplete/CHANGES
+Announcement: http://freshmeat.net/projects/optcomplete/
+Announcement: http://www.python.org/pypi?%3Aaction=search&name=optcomplete
+Download-Releases: http://furius.ca/downloads/optcomplete/releases
+Download-Snapshots: http://furius.ca/downloads/optcomplete/snapshots
+Bugs-Reporting: mailto:blais@furius.ca
+License: BSD

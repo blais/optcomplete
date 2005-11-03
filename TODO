@@ -1,0 +1,39 @@
+=================
+TODO: optcomplete
+=================
+
+
+- bug: we need a better way to pass the COMP_WORDS array to the program, lest
+  the space delimited arguments will be split (bleh). perhaps use a random
+  string to do this.
+
+- provide more completers.
+
+
+
+
+.. end
+
+- how will it work with my multiple subcommand framework?
+
+- see if we can support csh.
+
+- we could add an option that would make the short options automatically expand
+  to long options, this depends how the shell treats our answers.
+
+- optcomplete: write and publish the insight document about optcomplete, with 3
+  volets:
+
+  1. documentation, in file
+  2. options parsing and help
+  3. graying/filter vs. programmable completion
+
+  - Unix has had the great tradition of the command-line interface (note: just
+    another interface);
+
+  - this has nurtured an environment where genericity has been given
+    importance, and incidentally, modularity. these conditions make for
+    software that is more robust: there is more reuse since the functionality
+    is more generic, and modularity forces the programmer to have to deal with
+    interfaces, which in turn indices the need for better design and thinking
+    of the code.
