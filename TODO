@@ -10,6 +10,26 @@ TODO: optcomplete
 - provide more completers.
 
 
+- Add this contribution from Mark Eichin <eichin@gmail.com>:
+
+    Was experimenting with optcomplete (1.2 from debian) and noticed that
+    the default completer *only* worked on local files, unlike the way
+    bash completion works without a hook.  This wasn't to hard to change
+    with an explicit FileCompleter::
+
+
+     # we don't need state, so make it a function...
+     def FileCompleter(pwd, line, point, prefix, suffix ):
+         """Completes by listing all possible files, here or matching 
+         substrings"""
+         startdir = os.path.dirname(prefix)
+         lhs = os.path.basename(prefix)
+         if not startdir:
+             startdir = pwd
+         return [os.path.join(startdir, f)
+                 for f in os.listdir(startdir) if f.startswith(lhs)]
+
+
 
 
 .. end
@@ -37,3 +57,5 @@ TODO: optcomplete
     is more generic, and modularity forces the programmer to have to deal with
     interfaces, which in turn indices the need for better design and thinking
     of the code.
+
+
