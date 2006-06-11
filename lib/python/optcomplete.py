@@ -111,7 +111,7 @@ class AllCompleter:
 
     """Completes by listing all possible files in current directory."""
 
-    def __call__( self, pwd, line, point, prefix, suffix ):
+    def __call__(self, pwd, line, point, prefix, suffix):
         return os.listdir(pwd)
 
 #-------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ class NoneCompleter:
 
     """Generates empty completion list."""
 
-    def __call__( self, pwd, line, point, prefix, suffix ):
+    def __call__(self, pwd, line, point, prefix, suffix):
         return []
 
 #-------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ class DirCompleter:
 
     """Completes by listing subdirectories only."""
 
-    def __call__( self, pwd, line, point, prefix, suffix ):
+    def __call__(self, pwd, line, point, prefix, suffix):
         return filter(isdir, os.listdir(pwd))
 
 #-------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ class RegexCompleter:
     """Completes by filtering all possible files with the given list of
     regexps."""
 
-    def __init__( self, regexlist, always_dirs=True ):
+    def __init__(self, regexlist, always_dirs=True):
         self.always_dirs = always_dirs
 
         if isinstance(regexlist, types.StringType):
@@ -150,7 +150,7 @@ class RegexCompleter:
                 r = re.compile(r)
             self.regexlist.append(r)
 
-    def __call__( self, pwd, line, point, prefix, suffix ):
+    def __call__(self, pwd, line, point, prefix, suffix):
         dn = dirname(prefix)
         if dn:
             pwd = dn
@@ -173,15 +173,15 @@ class ListCompleter:
 
     """Completes by filtering using a fixed list of strings."""
 
-    def __init__( self, stringlist ):
+    def __init__(self, stringlist):
         self.olist = stringlist
 
-    def __call__( self, pwd, line, point, prefix, suffix ):
+    def __call__(self, pwd, line, point, prefix, suffix):
         return self.olist
 
 #-------------------------------------------------------------------------------
 #
-def extract_word( line, point ):
+def extract_word(line, point):
 
     """Return a prefix and suffix of the enclosing word.  The character under
     the cursor is the first character of the suffix."""
@@ -208,11 +208,11 @@ def extract_word( line, point ):
 
 #-------------------------------------------------------------------------------
 #
-def autocomplete( parser,
+def autocomplete(parser,
                   arg_completer=None, # means use default.
                   opt_completer=None,
                   subcmd_completer=None,
-                  subcommands=None ):
+                  subcommands=None):
 
     """Automatically detect if we are requested completing and if so generate
     completion automatically from given parser.
@@ -382,7 +382,7 @@ def autocomplete( parser,
 
 #-------------------------------------------------------------------------------
 #
-def guess_first_nonoption( gparser, subcmds_map ):
+def guess_first_nonoption(gparser, subcmds_map):
 
     """Given a global options parser, try to guess the first non-option without
     generating an exception. This is used for scripts that implement a
@@ -428,7 +428,7 @@ class CmdComplete:
     course, you don't really have to use this, but if you do it is convenient to
     have it here."""
 
-    def autocomplete( self, completer ):
+    def autocomplete(self, completer):
         import optparse
         parser = optparse.OptionParser(self.__doc__.strip())
         if hasattr(self, 'addopts'):

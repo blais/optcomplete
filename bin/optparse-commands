@@ -78,7 +78,7 @@ class CmdSimplest:
 
     names = ['simplest']
 
-    def execute( self, args ):
+    def execute(self, args):
         print 'Doing something simple.'
 
 
@@ -92,11 +92,11 @@ class CmdFoo:
 
     names = ['foo', 'goo']
 
-    def addopts( self, parser ):
+    def addopts(self, parser):
         parser.add_option('-l', '--local', action='store_true',
                           help="Some local option.")
 
-    def execute( self, args ):
+    def execute(self, args):
         print 'Executing CmdFoo'
         pprint(args)
         pprint(self.gopts)
@@ -112,12 +112,12 @@ class CmdBar(CmdFoo):
 
     names = ['bar', 'gore']
 
-    def addopts( self, parser ):
+    def addopts(self, parser):
         CmdFoo.addopts(self, parser)
         parser.add_option('-L', '--local-other', action='store_true',
                           help="Some other local option.")
 
-    def execute( self, args ):
+    def execute(self, args):
         print 'Executing CmdBar'
         pprint(args)
         pprint(self.gopts)
@@ -133,7 +133,7 @@ class CmdHelp:
 
     names =['help', 'man']
 
-    def execute( self, args ):
+    def execute(self, args):
         import optparse
         if args:
             cmdname = args[0]
@@ -150,7 +150,7 @@ class CmdHelp:
 
 #-------------------------------------------------------------------------------
 #
-def parse_subcommands( gparser, subcmds ):
+def parse_subcommands(gparser, subcmds):
 
     """Parse given global arguments, find subcommand from given list of
     subcommand objects, parse local arguments and return a tuple of global
