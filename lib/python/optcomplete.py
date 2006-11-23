@@ -2,22 +2,22 @@
 #******************************************************************************\
 #* Copyright (c) 2003-2004, Martin Blais
 #* All rights reserved.
-#* 
+#*
 #* Redistribution and use in source and binary forms, with or without
 #* modification, are permitted provided that the following conditions are
 #* met:
-#* 
+#*
 #* * Redistributions of source code must retain the above copyright
 #*   notice, this list of conditions and the following disclaimer.
-#* 
+#*
 #* * Redistributions in binary form must reproduce the above copyright
 #*   notice, this list of conditions and the following disclaimer in the
 #*   documentation and/or other materials provided with the distribution.
-#* 
+#*
 #* * Neither the name of the Martin Blais, Furius, nor the names of its
 #*   contributors may be used to endorse or promote products derived from
 #*   this software without specific prior written permission.
-#* 
+#*
 #* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 #* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 #* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -241,7 +241,7 @@ def autocomplete(parser,
     # caller complete. This is the normal path of execution.
     if not os.environ.has_key('OPTPARSE_AUTO_COMPLETE'):
         return
-    
+
     # Set default completers.
     if arg_completer is None:
         arg_completer = AllCompleter()
@@ -288,7 +288,7 @@ def autocomplete(parser,
                     return value.autocomplete(subcmd_completer)
                 else:
                     sys.exit(1) # no completions for that command object
-            
+
     # Extract word enclosed word.
     prefix, suffix = extract_word(cline, cpoint)
     # The following would be less exact, but will work nonetheless .
@@ -317,6 +317,8 @@ def autocomplete(parser,
                     optarg = True
                     if hasattr(option, 'completer'):
                         completer = option.completer
+                    elif option.type != 'string':
+                        completer = NoneCompleter()
                     else:
                         completer = opt_completer
                 # Warn user at least, it could help him figure out the problem.
@@ -345,6 +347,7 @@ def autocomplete(parser,
 
             completer = RegexCompleter(completer)
             completions += completer(os.getcwd(), cline, cpoint, prefix, suffix)
+
 
         elif isinstance(completer, types.FunctionType) or \
              isinstance(completer, types.LambdaType) or \
@@ -412,7 +415,7 @@ def guess_first_nonoption(gparser, subcmds_map):
             value = subcmds_map[subcmdname]
         except KeyError:
             pass
-    
+
     gparser.allow_interspersed_args = prev_interspersed # restore state
 
     return value # can be None, indicates no command chosen.
