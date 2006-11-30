@@ -62,3 +62,36 @@ TODO: optcomplete
     of the code.
 
 
+
+
+
+  
+- Reported by Graham Davies::
+
+    the module gives exactly the same symptoms as the regular bash
+    completion code (not that surprising).
+
+    These do NOT work as expected:
+
+    :work[tab]
+    p:work
+    =work
+    p=work  etc.
+
+    However, these all work fine with or without the prefix 'p':
+
+    @work
+    p-work
+    p+work
+    p%work
+    p_work
+    p^work
+    p[work
+    p]work
+    p{work
+    p}work
+    p?work
+
+    Can you envision a fix for this - or are the : and = symbols fundamental
+    to bash completion?
+
