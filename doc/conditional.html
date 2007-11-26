@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta name="generator" content="Docutils 0.3.10: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
 <title>Using optcomplete Conditionally</title>
 <meta name="author" content="Martin Blais &lt;blais&#64;furius.ca&gt;" />
 <meta name="date" content="2004-01-28" />
@@ -33,16 +33,16 @@
 <p>Notes on adding conditionals for scripts to keep on working even without
 optcomplete.</p>
 </div>
-<div class="section">
-<h1><a id="motivation" name="motivation">Motivation</a></h1>
+<div class="section" id="motivation">
+<h1>Motivation</h1>
 <p>Sometimes it is important for a particular script to be able to work without the
 presence of the non-standard <tt class="docutils literal"><span class="pre">optcomplete</span></tt> module.  After that, if that is the
 only thing that is missing, the script is still able to do its work without
 completion.</p>
 <p>This document contains little notes on how to do this but still take advantage
 of auto-generated completion if the module is available.</p>
-<div class="section">
-<h2><a id="note" name="note">Note</a></h2>
+<div class="section" id="note">
+<h2>Note</h2>
 <p>Note that if your shell binding hooks a program to the autocomplete function,
 the program will be invoked without arguments and you will see the output that
 calling it as such would generate, unless the program is written to handle this
@@ -54,8 +54,8 @@ elif 'COMP_LINE' in os.environ:
 </pre>
 </div>
 </div>
-<div class="section">
-<h1><a id="simple" name="simple">Simple</a></h1>
+<div class="section" id="simple">
+<h1>Simple</h1>
 <p>You can import like this:</p>
 <pre class="literal-block">
 try:
@@ -74,8 +74,8 @@ if optcomplete:
     optcomplete.autocomplete(parser, ['.*\.tar.*'])
 </pre>
 </div>
-<div class="section">
-<h1><a id="with-subcommands" name="with-subcommands">With Subcommands</a></h1>
+<div class="section" id="with-subcommands">
+<h1>With Subcommands</h1>
 <p>Importing, with a base class for commands:</p>
 <pre class="literal-block">
 try:

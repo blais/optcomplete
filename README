@@ -30,7 +30,10 @@ programs.
 During development of this proof-of-concept, we were interested in finding if
 the programs could not describe their completion routines themselves, using the
 well-specified completion protocol in bash.  Similar completion routines could
-be easily written for other shells and we could extend this module to them.
+be easily written for other shells and we could extend this module to
+them.
+
+This code comes with support for automatic completions for Bash and Zsh.
 
 
 Documentation
