@@ -220,7 +220,7 @@ def parse_subcommands(gparser, subcmds):
     except KeyError:
         raise SystemExit("Error: invalid command '%s'" % subcmdname)
 
-    return sc.gopts, sc, sc.opts, subsubargs
+    return gopts, sc, sc.opts, subsubargs
 
 #===============================================================================
 # MAIN
