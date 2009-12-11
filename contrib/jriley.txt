@@ -1,0 +1,63 @@
+11 Dec 2009 12:35 PM  ( 26 mins 28 secs ago )
+
+
+Hi Martin,
+
+I'd like to start off by thanking you for writing this module. Both the code
+and the subcommands example have been extremely useful in both setting up my
+cli as well as providing bash/zsh completion.
+
+With that said, I ran into a couple of issues with optcomplete, outlined
+below, that I fixed:
+
+1. OptionParser prints to stderr and then calls sys.exit when receiving
+ambiguous options. For global options, optcomplete trys/excepts the parse_args
+method on the global OptionParser to assist in completion. This works fine
+except that the msgs printed to stderr show up in the middle of the results
+for completion. I've fixed this problem (links at the bottom).
+
+2. optcomplete sets AllCompleter for anything that takes an arg and doesn't
+have a completer. AllCompleter simply displays the current pwd making it
+impossible to complete files/dirs in other locations. I've found that setting
+by default NoneCompleter instead of AllCompleter and using the following bash
+completion line allows the shell to take over completion when completion
+results are null (ie completions=[]):
+
+complete -F _optcomplete -o default someprog
+
+Basically I've added "-o default" to the bash completion declaration which
+tells the shell to use the shell's completion for any null completion results.
+This allows the user to complete files/dirs as they're used to.
+
+3. The zsh completion config (/etc/optcomplete.zsh) gave me issues when using
+with the latest zsh. I found a better solution which does not require
+maintaining two separate optcomplete completion functions for bash/zsh. I'm
+using optcomplete for my project StarCluster (http://web.mit.edu/star) and
+this is how I'm instructing my zsh users to install completion for
+StarCluster:
+
+Basically you keep the script you have for bash (with the complete line above)
+and use this in your zshrc/zprofile/etc:
+
+autoload -U compinit && compinit
+autoload -Uz bashcompinit && bashcompinit
+source /path/to/bash-completion/script.sh
+
+This allows the same completion script to be used for both bash and zsh and
+I've tested that it works great :D
+
+You can find my patched version of optcomplete.py that fixes the issues above
+here:
+
+http://github.com/jtriley/StarCluster/blob/master/starcluster/optcomplete.py
+
+And my completion docs/configs for users here:
+
+http://github.com/jtriley/StarCluster/tree/master/completion/
+
+Please feel free to absorb these changes into optcomplete. I will keep
+updating this module as necessary and inform you of any bugs I have or fix.
+
+Thanks again for this wonderful module!
+
+~Justin 
