@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta name="generator" content="Docutils 0.4.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
 <title>optcomplete: Sample Example Output</title>
 <meta name="author" content="Martin Blais &lt;blais&#64;furius.ca&gt;" />
 <meta name="date" content="2004-01-26" />
@@ -23,7 +23,7 @@
 <col class="docinfo-content" />
 <tbody valign="top">
 <tr><th class="docinfo-name">Author:</th>
-<td>Martin Blais &lt;<a class="reference" href="mailto:blais&#64;furius.ca">blais&#64;furius.ca</a>&gt;</td></tr>
+<td>Martin Blais &lt;<a class="reference external" href="mailto:blais&#64;furius.ca">blais&#64;furius.ca</a>&gt;</td></tr>
 <tr><th class="docinfo-name">Date:</th>
 <td>2004-01-26</td></tr>
 </tbody>
@@ -32,9 +32,9 @@
 <p class="topic-title first">Abstract</p>
 <p>Some sample output and examples of what optcomplete provides.</p>
 </div>
-<div class="section">
-<h1><a id="basic-features" name="basic-features">Basic Features</a></h1>
-<p>For some input script with the following <tt class="docutils literal"><span class="pre">optparse</span></tt> declarations:</p>
+<div class="section" id="basic-features">
+<h1>Basic Features</h1>
+<p>For some input script with the following <tt class="docutils literal">optparse</tt> declarations:</p>
 <pre class="literal-block">
 parser = optparse.OptionParser()
 
@@ -113,7 +113,7 @@ elbow:~/p/optcomplete/test$ optcomplete-test --simple
 --output   --simple   -o         -s         a.tar.bz2
 </pre>
 <p>Option-specific completion can be easily implemented as seen above, in this
-example, the option <tt class="docutils literal"><span class="pre">--script</span></tt> takes files that end with <tt class="docutils literal"><span class="pre">.py</span></tt> only:</p>
+example, the option <tt class="docutils literal"><span class="pre">--script</span></tt> takes files that end with <tt class="docutils literal">.py</tt> only:</p>
 <pre class="literal-block">
 elbow:~/p/optcomplete/test$ optcomplete-test --script
 script1.py  script2.py
@@ -130,7 +130,7 @@ elbow:~/p/optcomplete/test$ optcomplete-test --simple --script script1.py a.
 a.tar      a.tar.bz2
 elbow:~/p/optcomplete/test$ optcomplete-test --simple --script script1.py a.tar
 </pre>
-<p>And running the program has the usual behaviour of <tt class="docutils literal"><span class="pre">optparse</span></tt>, nothing changes:</p>
+<p>And running the program has the usual behaviour of <tt class="docutils literal">optparse</tt>, nothing changes:</p>
 <pre class="literal-block">
 ----------------------------------------------------------
 opts &lt;Values at 0x404181ac: {'simple': None, 'output': None, 'script': 'script1.py'}&gt;
@@ -141,20 +141,20 @@ args ['a.tar']
 <p class="first admonition-title">Note</p>
 <p>It is important to note that a shell completion hook is required in order for
 the shell to invoke the Python script with the appropriate input to request
-<tt class="docutils literal"><span class="pre">optcomplete</span></tt> completion in the first place.  This can be done in a
+<tt class="docutils literal">optcomplete</tt> completion in the first place.  This can be done in a
 bash/shell initialization file for each supported program once the shell
-<tt class="docutils literal"><span class="pre">_optcomplete</span></tt> function has been sourced, it could easily be setup
+<tt class="docutils literal">_optcomplete</tt> function has been sourced, it could easily be setup
 globally:</p>
 <pre class="last literal-block">
 complete -F _optcomplete optcomplete-test
 </pre>
 </div>
 </div>
-<div class="section">
-<h1><a id="using-subcommands" name="using-subcommands">Using Subcommands</a></h1>
+<div class="section" id="using-subcommands">
+<h1>Using Subcommands</h1>
 <p>You can also implement completion for subcommands, given very few
 restrictions. Basically, you build a map from command name to command object and
-give that to the <tt class="docutils literal"><span class="pre">autocomplete()</span></tt> function and it works it out for you:</p>
+give that to the <tt class="docutils literal">autocomplete()</tt> function and it works it out for you:</p>
 <pre class="literal-block">
 elbow:~/p/optcomplete$ optcomplete-commands
 --global    --version   -v          foo         help
