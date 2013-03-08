@@ -7,3 +7,9 @@ Chris Lesniewski-Laas
 Justin Riley -- justin.t.riley at gmail dot com
   Submitted fixes, improvements and zsh support fixes.
 
+Timo Ewalds -- timo at spotify dot com
+  Improved file completion via use of standard bash functions instead
+  of my Python-based completer. This also allows evaluation of values
+  suggested by optcomplete.
+
+

@@ -88,23 +88,17 @@ __author__ = "Martin Blais <blais@furius.ca>"
 ##      completion facility (*note Programmable Completion::).
 
 
-import sys, os
+import sys, os, glob
 from os.path import *
 import types
 import re
 
-from pprint import pprint, pformat
-
-from optparse import OptionParser
+from optparse import OptionParser, Option
 
 debugfn = None # for debugging only
 
-class AllCompleter:
-
-    """Completes by listing all possible files in current directory."""
-
-    def __call__(self, pwd, line, point, prefix, suffix):
-        return os.listdir(pwd)
+def shell():
+    return basename(os.getenv("SHELL"))
 
 class NoneCompleter:
 
@@ -113,12 +107,83 @@ class NoneCompleter:
     def __call__(self, pwd, line, point, prefix, suffix):
         return []
 
+class ListCompleter:
+
+    """Completes by filtering using a fixed list of strings."""
+
+    def __init__(self, stringlist):
+        self.olist = stringlist
+
+    def __call__(self, pwd, line, point, prefix, suffix):
+        return self.olist
+
+class AllCompleter:
+
+    """Completes by listing all possible files in current directory."""
+
+    def __call__(self, pwd, line, point, prefix, suffix):
+        return os.listdir(pwd)
+
+class FileCompleter:
+
+    """Completes by listing all possible files in current directory.
+       If endings are specified, then limit the files to those."""
+
+    def __init__(self, endings=[]):
+        if isinstance(endings, str):
+            endings = [endings]
+        self.endings = endings
+
+    def __call__(self, pwd, line, point, prefix, suffix):
+        if shell() == "bash":
+            if len(self.endings) == 0:
+                return "_filedir"
+            else:
+                return "_filedir '@(" + '|'.join(self.endings) + ")'"
+#        elif shell() == "zsh":
+#            #TODO: make sure this works, limit to file endings
+#            return "_files"
+        else:
+            res = glob.glob(prefix + '*')
+            res = [f + ['','/'][isdir(f)] for f in res] #add trailing slashes to directories
+            if len(self.endings) > 0:
+                res = filter(lambda a: isdir(a) or a.endswith(tuple(self.endings)), res)
+            if len(res) == 1 and isdir(res[0]):
+                #return two options so that it completes the / but doesn't add a space
+                return [res[0] + 'a', res[0] + 'b']
+            else:
+                return res
+
 class DirCompleter:
 
     """Completes by listing subdirectories only."""
 
     def __call__(self, pwd, line, point, prefix, suffix):
-        return filter(isdir, os.listdir(pwd))
+        if shell() == "bash":
+            return "_filedir -d"
+#        elif shell() == "zsh":
+#            #TODO: make sure this works
+#            return "_dirs"
+        else:
+            res = glob.glob(prefix + '*')
+            res = filter(isdir, res)
+            res = [f + '/' for f in res] #add trailing slashes
+            if len(res) == 1:
+                #return two options so that it completes the / but doesn't add a space
+                return [res[0] + 'a', res[0] + 'b']
+            else:
+                return res
+
+class KnownHostsCompleter:
+    """Completes a list of known hostnames"""
+    def __call__(self, pwd, line, point, prefix, suffix):
+        if shell() == "bash":
+            return "_known_hosts"
+#        elif shell() == "zsh":
+#            #TODO: make sure this works
+#            return "_hosts"
+        else:
+            return []
 
 class RegexCompleter:
 
@@ -153,15 +218,16 @@ class RegexCompleter:
                 ofiles.append(fn + '/')
         return ofiles
 
-class ListCompleter:
 
-    """Completes by filtering using a fixed list of strings."""
+############################
 
-    def __init__(self, stringlist):
-        self.olist = stringlist
+class CompleterOption(Option):
+    def __init__(self, *args, **kwargs):
+        completer = kwargs.pop('completer', None)
+        Option.__init__(self, *args, **kwargs)
+        if completer:
+            self.completer = completer
 
-    def __call__(self, pwd, line, point, prefix, suffix):
-        return self.olist
 
 def extract_word(line, point):
 
@@ -221,15 +287,16 @@ def autocomplete(parser,
     # caller complete. This is the normal path of execution.
     if not os.environ.has_key('OPTPARSE_AUTO_COMPLETE'):
         return
+    # After this point we should never return, only sys.exit(1)
 
     # Set default completers.
     if arg_completer is None:
         arg_completer = NoneCompleter()
     if opt_completer is None:
-        opt_completer = NoneCompleter()
+        opt_completer = FileCompleter()
     if subcmd_completer is None:
         ## subcmd_completer = arg_completer
-        subcmd_completer = NoneCompleter()
+        subcmd_completer = FileCompleter()
 
     # By default, completion will be arguments completion, unless we find out
     # later we're trying to complete for an option.
@@ -251,6 +318,11 @@ def autocomplete(parser,
     cpoint = int(os.environ['COMP_POINT'])
     cword = int(os.environ['COMP_CWORD'])
 
+    # Extract word enclosed word.
+    prefix, suffix = extract_word(cline, cpoint)
+    # The following would be less exact, but will work nonetheless .
+    # prefix, suffix = cwords[cword], None
+
 
     # If requested, try subcommand syntax to find an options parser for that
     # subcommand.
@@ -266,19 +338,16 @@ def autocomplete(parser,
                     completer = value[1]
                 else:
                     completer = subcmd_completer
-                return autocomplete(parser, completer)
+                autocomplete(parser, completer)
             else:
                 # Call completion method on object. This should call
                 # autocomplete() recursively with appropriate arguments.
                 if hasattr(value, 'autocomplete'):
-                    return value.autocomplete(subcmd_completer)
-                else:
-                    sys.exit(1) # no completions for that command object
-
-    # Extract word enclosed word.
-    prefix, suffix = extract_word(cline, cpoint)
-    # The following would be less exact, but will work nonetheless .
-    # prefix, suffix = cwords[cword], None
+                    value.autocomplete(subcmd_completer)
+                # else no completions for that command object
+            sys.exit(1)
+        else: # suggest subcommands
+            completer = ListCompleter(subcommands.keys())
 
     # Look at previous word, if it is an option and it requires an argument,
     # check for a local completer.  If there is no completer, what follows
@@ -331,26 +400,39 @@ def autocomplete(parser,
                isinstance(completer, types.ListType) or \
                isinstance(completer, types.TupleType):
 
-            completer = RegexCompleter(completer)
-            completions += completer(os.getcwd(), cline, cpoint, prefix, suffix)
-
+            completer = FileCompleter(completer)
+            completions = completer(os.getcwd(), cline, cpoint, prefix, suffix)
 
         elif isinstance(completer, types.FunctionType) or \
              isinstance(completer, types.LambdaType) or \
              isinstance(completer, types.ClassType) or \
              isinstance(completer, types.ObjectType):
-            completions += completer(os.getcwd(), cline, cpoint, prefix, suffix)
+            completions = completer(os.getcwd(), cline, cpoint, prefix, suffix)
 
-    # Filter using prefix.
-    if prefix:
-        completions = filter(lambda x: x.startswith(prefix), completions)
-
-    # Print result.
-    print ' '.join(completions)
+    if isinstance(completions, str):
+        # is a bash command, just run it
+        if shell() in ("bash"): #TODO: zsh
+            print completions
+        else:
+            raise Exception("Commands are unsupported by this shell")
+    else:
+        # Filter using prefix.
+        if prefix:
+            completions = sorted(filter(lambda x: x.startswith(prefix), completions))
+        completions = ' '.join(completions)
+        # Save results
+        if shell() == "bash":
+            print 'COMPREPLY=(' + completions + ')'
+#        elif shell() == "zsh":
+#            #TODO: modify the zsh completer script to eval the result
+#            print 'reply=(' + completions + ')'
+        else:
+            print completions
 
     # Print debug output (if needed).  You can keep a shell with 'tail -f' to
     # the log file to monitor what is happening.
     if debugfn:
+        from pprint import pformat
         f = open(debugfn, 'a')
         print >> f, '---------------------------------------------------------'
         print >> f, 'CWORDS', cwords
