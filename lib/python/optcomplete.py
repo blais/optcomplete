@@ -372,6 +372,8 @@ def autocomplete(parser,
                     optarg = True
                     if hasattr(option, 'completer'):
                         completer = option.completer
+                    elif option.choices:
+                        completer = ListCompleter(option.choices)
                     elif option.type != 'string':
                         completer = NoneCompleter()
                     else:
@@ -419,6 +421,7 @@ def autocomplete(parser,
         # Filter using prefix.
         if prefix:
             completions = sorted(filter(lambda x: x.startswith(prefix), completions))
+        completions = [str(c) for c in completions]
         completions = ' '.join(completions)
         # Save results
         if shell() == "bash":
