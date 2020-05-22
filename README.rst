@@ -74,9 +74,9 @@ More examples:
 Download
 ========
 
-A Mercurial repository can be found at:
+A Git repository can be found at:
 
-  http://bitbucket.org/blais/optcomplete
+  http://github.com/blais/optcomplete
 
 
 Copyright and License
