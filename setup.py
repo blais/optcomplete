@@ -57,7 +57,7 @@ with optcomplete (see http://furius.ca/optcomplete for more details).
       author="Martin Blais",
       author_email="blais@furius.ca",
       url="http://furius.ca/optcomplete",
-      download_url="http://bitbucket.org/blais/optcomplete",
+      download_url="http://github.com/blais/optcomplete",
       package_dir = {'': 'lib/python'},
       py_modules = ['optcomplete'],
      )
